@@ -84,15 +84,18 @@ function updateGame() {
     for (let i = projectiles.length - 1; i >= 0; i--) {
         if (projectiles[i].y < 0) {
             projectiles[i].destroy()
-            projectiles.removeAt(i)
+            projectiles[i] = null
         }
     }
+
+    // Clean up null projectiles
+    projectiles = projectiles.filter(p => p != null)
 
     // Update enemies
     for (let i = enemies.length - 1; i >= 0; i--) {
         if (enemies[i].y > 120) {
             enemies[i].destroy()
-            enemies.removeAt(i)
+            enemies[i] = null
             lives--
             if (lives <= 0) {
                 endGame()
@@ -100,19 +103,26 @@ function updateGame() {
         }
     }
 
+    // Clean up null enemies
+    enemies = enemies.filter(e => e != null)
+
     // Check collisions
-    for (let i = projectiles.length - 1; i >= 0; i--) {
-        for (let j = enemies.length - 1; j >= 0; j--) {
+    for (let i = 0; i < projectiles.length; i++) {
+        for (let j = 0; j < enemies.length; j++) {
             if (projectiles[i].overlapsWith(enemies[j])) {
                 projectiles[i].destroy()
-                projectiles.removeAt(i)
                 enemies[j].destroy()
-                enemies.removeAt(j)
+                projectiles[i] = null
+                enemies[j] = null
                 score += 100
                 break
             }
         }
     }
+
+    // Clean up after collisions
+    projectiles = projectiles.filter(p => p != null)
+    enemies = enemies.filter(e => e != null)
 
     drawUI()
 }
